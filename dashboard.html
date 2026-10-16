@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff">
+    <meta
+      name="description"
+      content="Check Cebu route conditions and get a clear overview of your Biyahero commute."
+    >
+    <title>Dashboard — Biyahero</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    >
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body class="dashboard-page">
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="index.html" aria-label="Biyahero home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M5 17.5V9.25C5 7.45 6.45 6 8.25 6h7.5C17.55 6 19 7.45 19 9.25v8.25H5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+              <path d="M8 6V4.75h8V6M5.5 12h13M8 17.5v2m8-2v2M8.25 14.75h.01m7.49 0h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span>Biyahero</span>
+        </a>
+
+        <nav class="desktop-nav" aria-label="Main navigation">
+          <a class="nav-link" href="index.html#home">Home</a>
+          <a class="nav-link" href="index.html#routes">Routes</a>
+          <a class="nav-link" href="#trip-history">Schedules</a>
+          <a class="nav-link" href="index.html#fare-guide">Fare Guide</a>
+        </nav>
+
+        <a class="button button-primary header-cta dashboard-cta" href="dashboard.html">Dashboard</a>
+
+        <details class="mobile-menu">
+          <summary aria-label="Open navigation menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </summary>
+          <nav aria-label="Mobile navigation">
+            <a href="index.html#home">Home</a>
+            <a href="index.html#routes">Routes</a>
+            <a href="#trip-history">Schedules</a>
+            <a href="index.html#fare-guide">Fare Guide</a>
+            <a href="dashboard.html">Dashboard</a>
+          </nav>
+        </details>
+      </div>
+    </header>
+
+    <main class="dashboard-main">
+      <section class="commute-welcome" aria-label="Welcome and local weather">
+        <div class="welcome-message">
+          <span class="welcome-avatar" aria-hidden="true">
+            <svg viewBox="0 0 32 32">
+              <circle cx="16" cy="11" r="6" fill="currentColor"/>
+              <path d="M5.5 27c.8-5.6 4.7-8.5 10.5-8.5s9.7 2.9 10.5 8.5" fill="currentColor"/>
+            </svg>
+          </span>
+          <div>
+            <h1>Good morning, P...!</h1>
+            <p>Plan your commute and find the quickest route with live updates.</p>
+          </div>
+        </div>
+        <div class="weather-summary" aria-label="Current weather in Cebu City: 28 degrees, partly cloudy">
+          <span class="weather-icon" aria-hidden="true">🌤️</span>
+          <div class="weather-temperature">28°C</div>
+          <div class="weather-place">Cebu City<br>Partly Cloudy</div>
+        </div>
+      </section>
+
+      <section class="route-status-section" aria-labelledby="route-status-title">
+        <div class="dashboard-section-heading">
+          <p class="dashboard-eyebrow">RIGHT NOW IN CEBU</p>
+          <h2 id="route-status-title">Live Traffic &amp; Route Status</h2>
+        </div>
+        <div class="route-status-grid">
+          <article class="route-status-card">
+            <h3>Ayala Center - SM City Cebu</h3>
+            <div class="route-condition">
+              <span class="condition-dot condition-normal"></span>
+              <div><strong>Normal</strong><span>12 min delay</span></div>
+            </div>
+          </article>
+          <article class="route-status-card">
+            <h3>SM City Cebu - IT Park</h3>
+            <div class="route-condition">
+              <span class="condition-dot condition-moderate"></span>
+              <div><strong>Moderate</strong><span>18 min delay</span></div>
+            </div>
+          </article>
+          <article class="route-status-card">
+            <h3>IT Park - Ayala</h3>
+            <div class="route-condition">
+              <span class="condition-dot condition-normal"></span>
+              <div><strong>Normal</strong><span>12 min delay</span></div>
+            </div>
+          </article>
+          <article class="route-status-card">
+            <h3>SM Seaside - Ayala</h3>
+            <div class="route-condition">
+              <span class="condition-dot condition-normal"></span>
+              <div><strong>Normal</strong><span>12 min delay</span></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="commute-summary-section" aria-labelledby="commute-summary-title">
+        <div class="dashboard-section-heading summary-heading">
+          <p class="dashboard-eyebrow">YOUR TRIP AT A GLANCE</p>
+          <h2 id="commute-summary-title">Your commute, summarized</h2>
+        </div>
+
+        <div class="summary-grid">
+          <article class="monthly-overview">
+            <div class="monthly-overview-heading">
+              <div>
+                <h3>Monthly overview</h3>
+                <p>Here's a quick overview of your commute this month.</p>
+              </div>
+              <span class="overview-menu" aria-hidden="true">•••</span>
+            </div>
+            <div class="commute-metrics">
+              <div class="commute-metric">
+                <span class="metric-icon metric-route" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M6 19V6m0 0L3.5 8.5M6 6l2.5 2.5M18 5v13m0 0-2.5-2.5M18 18l2.5-2.5M6 12h12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <strong>18</strong>
+                <span>Total trips</span>
+              </div>
+              <div class="commute-metric">
+                <span class="metric-icon metric-distance" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M5 18c3-1 2-5 5-6s5 3 9 2M6 6h.01M18 18h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                </span>
+                <strong>62 km</strong>
+                <span>Total distance<br>approx.</span>
+              </div>
+              <div class="commute-metric">
+                <span class="metric-icon metric-time" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <strong>13 hrs</strong>
+                <span>Total time on the road</span>
+              </div>
+              <div class="commute-metric">
+                <span class="metric-icon metric-fare" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M12 4v16m4-12c-.7-1-2-1.5-4-1.5-2 0-3.5.9-3.5 2.5 0 4 7.5 1.5 7.5 5.5 0 1.7-1.5 3-4 3-1.8 0-3.3-.6-4.2-1.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                </span>
+                <strong>₱238</strong>
+                <span>Total fare spent<br>this month</span>
+              </div>
+            </div>
+            <p class="travel-insight">
+              <span class="insight-icon" aria-hidden="true">✦</span>
+              <span><strong>Travel insight</strong><br>You’ve made 18 trips this month. Keep exploring smarter routes to save time on your daily commute.</span>
+            </p>
+          </article>
+
+          <aside class="most-used-routes" aria-label="Most used routes">
+            <h3>Most used route</h3>
+            <article class="used-route">
+              <span class="used-route-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M7 5h10a2 2 0 0 1 2 2v11H5V7a2 2 0 0 1 2-2Zm-2 8h14M8 18v2m8-2v2M8 9h.01M16 9h.01" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <div><strong>04L · 18 trips</strong><span>Ayala Center - SM City Cebu</span></div>
+            </article>
+            <article class="used-route">
+              <span class="used-route-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M7 5h10a2 2 0 0 1 2 2v11H5V7a2 2 0 0 1 2-2Zm-2 8h14M8 18v2m8-2v2M8 9h.01M16 9h.01" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <div><strong>04L · 18 trips</strong><span>Ayala Center - SM City Cebu</span></div>
+            </article>
+            <article class="used-route">
+              <span class="used-route-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M7 5h10a2 2 0 0 1 2 2v11H5V7a2 2 0 0 1 2-2Zm-2 8h14M8 18v2m8-2v2M8 9h.01M16 9h.01" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <div><strong>04L · 18 trips</strong><span>Ayala Center - SM City Cebu</span></div>
+            </article>
+          </aside>
+        </div>
+      </section>
+
+      <section class="trip-history-section" id="trip-history" aria-labelledby="trip-history-title">
+        <div class="trip-history-heading">
+          <div class="dashboard-section-heading">
+            <p class="dashboard-eyebrow">YOUR RECENT RIDES</p>
+            <h2 id="trip-history-title">All trips</h2>
+          </div>
+          <div class="trip-filters" aria-label="Trip history filters">
+            <button type="button">October <span aria-hidden="true">⌄</span></button>
+            <button type="button">All modes <span aria-hidden="true">⌄</span></button>
+          </div>
+        </div>
+        <div class="trip-table-wrap">
+          <table class="trip-table">
+            <thead>
+              <tr><th scope="col">Trip</th><th scope="col">Date</th><th scope="col">Fare</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><span class="trip-route-icon" aria-hidden="true">↗</span> Lahug - Ayala</td><td>09 Oct</td><td>₱13</td></tr>
+              <tr><td><span class="trip-route-icon" aria-hidden="true">↗</span> Lahug - Mabolo</td><td>08 Oct</td><td>₱13</td></tr>
+              <tr><td><span class="trip-route-icon" aria-hidden="true">↗</span> Ayala - Lahug</td><td>08 Oct</td><td>₱13</td></tr>
+              <tr><td><span class="trip-route-icon" aria-hidden="true">↗</span> Lahug - Cebu</td><td>07 Oct</td><td>₱13</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
