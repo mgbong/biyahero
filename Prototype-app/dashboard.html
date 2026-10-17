@@ -206,6 +206,10 @@
     .map-legend__dot--from { background: var(--teal); }
     .map-legend__dot--to { background: var(--navy); }
     .map-legend__dot--stop { background: var(--gray-400); }
+    .map-legend__line {
+      width: 18px; height: 4px; border-radius: 2px;
+      background: var(--teal); flex-shrink: 0;
+    }
     .map-pin {
       position: relative;
       width: 28px; height: 28px;
@@ -397,6 +401,7 @@
           <div class="map-legend">
             <span class="map-legend__item"><span class="map-legend__dot map-legend__dot--from"></span> Starting point</span>
             <span class="map-legend__item"><span class="map-legend__dot map-legend__dot--to"></span> Destination</span>
+            <span class="map-legend__item"><span class="map-legend__line"></span> Shortest road route</span>
             <span class="map-legend__item"><span class="map-legend__dot map-legend__dot--stop"></span> Other covered stops</span>
           </div>
         </div>
@@ -540,7 +545,8 @@
   };
 
   var routeMap = null;
-  var mapLayers = { markers: [], line: null };
+  var mapLayers = { markers: [], line: null, casing: null };
+  var routeFetchId = 0;
 
   function pinIcon(kind) {
     return L.divIcon({
@@ -552,34 +558,68 @@
     });
   }
 
+  function setMapSub(text) {
+    var sub = document.getElementById('map-sub');
+    if (sub) sub.textContent = text;
+  }
+
+  function fmtRoadKm(m) {
+    return m >= 1000 ? (m / 1000).toFixed(1) + ' km' : Math.round(m) + ' m';
+  }
+
+  function fmtRoadMin(s) {
+    return Math.max(1, Math.round(s / 60)) + ' min';
+  }
+
+  function clearRouteLine() {
+    if (!routeMap) return;
+    if (mapLayers.casing) { routeMap.removeLayer(mapLayers.casing); mapLayers.casing = null; }
+    if (mapLayers.line) { routeMap.removeLayer(mapLayers.line); mapLayers.line = null; }
+  }
+
   function clearMapLayers() {
     if (!routeMap) return;
     mapLayers.markers.forEach(function(m) { routeMap.removeLayer(m); });
     mapLayers.markers = [];
-    if (mapLayers.line) {
-      routeMap.removeLayer(mapLayers.line);
-      mapLayers.line = null;
-    }
+    clearRouteLine();
   }
 
-  function initRouteMap() {
-    if (routeMap || typeof L === 'undefined') return;
-    routeMap = L.map('route-map', { scrollWheelZoom: true }).setView([10.29, 123.89], 12);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  function drawRouteLine(latlngs) {
+    clearRouteLine();
+    mapLayers.casing = L.polyline(latlngs, {
+      color: '#ffffff', weight: 8, opacity: 0.95, lineJoin: 'round', lineCap: 'round'
     }).addTo(routeMap);
-    updateRouteMap();
-    setTimeout(function() { routeMap.invalidateSize(); }, 200);
+    mapLayers.line = L.polyline(latlngs, {
+      color: '#0E7C6F', weight: 5, opacity: 1, lineJoin: 'round', lineCap: 'round'
+    }).addTo(routeMap);
+    routeMap.fitBounds(mapLayers.line.getBounds(), { padding: [48, 48], maxZoom: 15 });
   }
 
-  function updateRouteMap() {
-    if (!routeMap) return;
-    clearMapLayers();
-    var fv = document.getElementById('from').value;
-    var tv = document.getElementById('to').value;
-    var bounds = [];
+  function fetchShortestRoadRoute(fromId, toId, requestId) {
+    var from = COORDS[fromId];
+    var to = COORDS[toId];
+    var path = from[1] + ',' + from[0] + ';' + to[1] + ',' + to[0];
+    var url = 'https://router.project-osrm.org/route/v1/driving/' + path
+      + '?overview=full&geometries=geojson&alternatives=true';
 
+    return fetch(url).then(function(res) {
+      if (!res.ok) throw new Error('Routing request failed');
+      return res.json();
+    }).then(function(data) {
+      if (requestId !== routeFetchId) return null;
+      if (!data.routes || !data.routes.length) throw new Error('No road route found');
+      var best = data.routes.slice().sort(function(a, b) {
+        return a.distance - b.distance;
+      })[0];
+      return {
+        latlngs: best.geometry.coordinates.map(function(pt) { return [pt[1], pt[0]]; }),
+        distance: best.distance,
+        duration: best.duration
+      };
+    });
+  }
+
+  function placeStopMarkers(fv, tv) {
     Object.keys(COORDS).forEach(function(id) {
       if (id === fv || id === tv) return;
       var m = L.circleMarker(COORDS[id], {
@@ -597,34 +637,59 @@
       var fromM = L.marker(COORDS[fv], { icon: pinIcon('from'), zIndexOffset: 1000 }).addTo(routeMap);
       fromM.bindPopup('<strong>Start</strong><br>' + LOCATIONS[fv]).openPopup();
       mapLayers.markers.push(fromM);
-      bounds.push(COORDS[fv]);
     }
     if (tv && COORDS[tv] && tv !== fv) {
       var toM = L.marker(COORDS[tv], { icon: pinIcon('to'), zIndexOffset: 1000 }).addTo(routeMap);
       toM.bindPopup('<strong>Destination</strong><br>' + LOCATIONS[tv]);
       mapLayers.markers.push(toM);
-      bounds.push(COORDS[tv]);
     }
-    if (fv && tv && COORDS[fv] && COORDS[tv] && fv !== tv) {
-      mapLayers.line = L.polyline([COORDS[fv], COORDS[tv]], {
-        color: '#0E7C6F',
-        weight: 4,
-        opacity: 0.85
-      }).addTo(routeMap);
+  }
+
+  function initRouteMap() {
+    if (routeMap || typeof L === 'undefined') return;
+    routeMap = L.map('route-map', { scrollWheelZoom: true }).setView([10.29, 123.89], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        + ' &copy; <a href="http://project-osrm.org">OSRM</a>'
+    }).addTo(routeMap);
+    updateRouteMap();
+    setTimeout(function() { routeMap.invalidateSize(); }, 200);
+  }
+
+  function updateRouteMap() {
+    if (!routeMap) return;
+    clearMapLayers();
+    var fv = document.getElementById('from').value;
+    var tv = document.getElementById('to').value;
+    var requestId = ++routeFetchId;
+
+    placeStopMarkers(fv, tv);
+
+    if (!fv || !tv || fv === tv || !COORDS[fv] || !COORDS[tv]) {
+      setMapSub('Cebu metro coverage · OpenStreetMap');
+      if (fv && COORDS[fv]) routeMap.setView(COORDS[fv], 13);
+      routeMap.invalidateSize();
+      return;
     }
 
-    var sub = document.getElementById('map-sub');
-    if (sub) {
-      if (fv && tv && fv !== tv) sub.textContent = (LOCATIONS[fv] || fv) + ' → ' + (LOCATIONS[tv] || tv);
-      else sub.textContent = 'Cebu metro coverage · OpenStreetMap';
-    }
-
-    if (bounds.length >= 2) {
-      routeMap.fitBounds(bounds, { padding: [48, 48], maxZoom: 13 });
-    } else if (bounds.length === 1) {
-      routeMap.setView(bounds[0], 13);
-    }
+    setMapSub('Finding shortest road route…');
+    routeMap.fitBounds([COORDS[fv], COORDS[tv]], { padding: [48, 48], maxZoom: 13 });
     routeMap.invalidateSize();
+
+    fetchShortestRoadRoute(fv, tv, requestId).then(function(route) {
+      if (!route || requestId !== routeFetchId) return;
+      drawRouteLine(route.latlngs);
+      setMapSub(
+        (LOCATIONS[fv] || fv) + ' → ' + (LOCATIONS[tv] || tv)
+        + ' · ' + fmtRoadKm(route.distance) + ' · ~' + fmtRoadMin(route.duration)
+        + ' via shortest roads'
+      );
+    }).catch(function() {
+      if (requestId !== routeFetchId) return;
+      drawRouteLine([COORDS[fv], COORDS[tv]]);
+      setMapSub((LOCATIONS[fv] || fv) + ' → ' + (LOCATIONS[tv] || tv) + ' · road routing unavailable');
+    });
   }
 
   var DB = {};
