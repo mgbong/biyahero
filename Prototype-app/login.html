@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Log In — Biyahero</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Eye toggle icon inside password field */
+    .input-wrap {
+      position: relative;
+    }
+    .input-wrap input {
+      padding-right: 44px;
+    }
+    .eye-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray-400);
+      display: flex;
+      align-items: center;
+    }
+    .forgot-link {
+      font-size: 12px;
+      color: var(--teal);
+      font-weight: 500;
+      display: block;
+      text-align: right;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAV ===== -->
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="signup.html" class="nav__logo">
+        <div class="nav__logo-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+               xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
+                  fill="currentColor"/>
+            <circle cx="12" cy="9" r="2.5" fill="white"/>
+          </svg>
+        </div>
+        Biyahero
+      </a>
+
+      <ul class="nav__links">
+        <li><a href="dashboard.html">Home</a></li>
+        <li><a href="dashboard.html">Routes</a></li>
+        <li><a href="dashboard.html#fare-guide">Fare Guide</a></li>
+      </ul>
+
+      <div class="nav__right">
+        <a href="signup.html" class="btn-nav">Sign Up</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== MAIN ===== -->
+  <main class="auth-page">
+    <div class="auth-grid">
+
+      <!-- Left -->
+      <div class="auth-left">
+        <h1 class="auth-headline" style="margin-bottom:20px;">
+          <span class="navy">Your Journey</span><br>
+          <span class="green">Starts Here</span>
+        </h1>
+
+        <p class="auth-desc">
+          Plan your routes, check schedules, and take public transport
+          with ease. Biyahero helps you get to your destination,
+          smarter and faster.
+        </p>
+
+        <div style="display:flex; gap:14px; flex-wrap:wrap; margin-top:10px;">
+          <a href="dashboard.html" class="btn btn-primary btn-lg">Get Started</a>
+          <a href="signup.html" class="btn btn-outline btn-lg">Sign Up</a>
+        </div>
+      </div>
+
+      <!-- Right card -->
+      <div class="auth-card auth-form-card">
+        <h2 class="auth-card__title">Login</h2>
+        <p class="auth-card__sub">Welcome back! Please enter your details to continue.</p>
+
+        <form action="dashboard.html" method="get" style="text-align:left; margin-top:6px;">
+          <div class="form-group">
+            <label for="login-email">Email or Phone Number</label>
+            <div class="input-wrap">
+              <input type="email" id="login-email" name="email"
+                     placeholder="name@example.com" autocomplete="email" />
+              <!-- person icon -->
+              <span class="eye-toggle" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor"
+                        stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom:6px;">
+            <label for="login-password">Password</label>
+            <div class="input-wrap">
+              <input type="password" id="login-password" name="password"
+                     placeholder="Enter your password" autocomplete="current-password" />
+              <!-- eye icon -->
+              <span class="eye-toggle" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"
+                        stroke="currentColor" stroke-width="1.8"/>
+                  <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M3 3l18 18" stroke="currentColor"
+                        stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </span>
+            </div>
+          </div>
+
+          <a href="#" class="forgot-link">Forgot password?</a>
+
+          <button type="submit" class="btn btn-primary btn-full btn-lg"
+                  style="margin-top:20px;">
+            Login
+          </button>
+        </form>
+
+        <div class="auth-card__divider"></div>
+
+        <p class="auth-card__footer">
+          Don't have an account? <a href="signup.html">Register</a>
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    Prototype with sample data for demonstration, not official fares or routes.
+  </footer>
+
+</body>
+</html>

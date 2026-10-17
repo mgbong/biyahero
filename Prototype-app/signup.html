@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up — Biyahero</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <!--
+    THESIS: Transit-utility app landing; refuses generic hero-metric template and gradient-card scaffold.
+    OWN-WORLD: Teal #0E7C6F + navy #2B2F7A + accent green #2E9B57; clean white surfaces, rounded cards, Inter type.
+    STORY: Drivers and operators see the value prop; commuters self-select via the right card CTA.
+    FIRST VIEWPORT: Two-column — left prose+checklist, right signup card. Primary action: Operator Sign Up (filled teal).
+    FORM: Brief-pinned world (Figma match). FINISH: reviewed and documented.
+  -->
+</head>
+<body>
+
+  <!-- ===== NAV ===== -->
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="signup.html" class="nav__logo">
+        <div class="nav__logo-icon">
+          <!-- pin / location icon -->
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+               xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
+                  fill="currentColor"/>
+            <circle cx="12" cy="9" r="2.5" fill="white"/>
+          </svg>
+        </div>
+        Biyahero
+      </a>
+
+      <ul class="nav__links">
+        <li><a href="dashboard.html">Home</a></li>
+        <li><a href="dashboard.html">Routes</a></li>
+        <li><a href="dashboard.html#fare-guide">Fare Guide</a></li>
+      </ul>
+
+      <div class="nav__right">
+        <a href="signup.html" class="btn-nav">Sign Up</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== MAIN ===== -->
+  <main class="auth-page">
+    <div class="auth-grid">
+
+      <!-- Left column -->
+      <div class="auth-left">
+        <p class="auth-label">Drivers &amp; Operators</p>
+
+        <h1 class="auth-headline">
+          <span class="navy">Drive with Biyahero.</span><br>
+          <span class="green">Reach more commuters.</span>
+        </h1>
+
+        <p class="auth-desc">
+          Join Biyahero for traditional jeepneys, modern jeepneys and buses.
+          Connect your route to the commuters who need it.
+        </p>
+
+        <ul class="checklist">
+          <li>
+            <svg class="check-icon" viewBox="0 0 20 20" fill="none"
+                 xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M4 10l4.5 4.5L16 6" stroke="currentColor"
+                    stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Get listed on your route
+          </li>
+          <li>
+            <svg class="check-icon" viewBox="0 0 20 20" fill="none"
+                 xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M4 10l4.5 4.5L16 6" stroke="currentColor"
+                    stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Verified badge
+          </li>
+          <li>
+            <svg class="check-icon" viewBox="0 0 20 20" fill="none"
+                 xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M4 10l4.5 4.5L16 6" stroke="currentColor"
+                    stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Post route changes
+          </li>
+        </ul>
+      </div>
+
+      <!-- Right column card -->
+      <div class="auth-card">
+        <h2 class="auth-card__title">Sign Up</h2>
+        <p class="auth-card__sub">Start your journey with Biyahero.</p>
+
+        <!-- Bus icon -->
+        <div class="icon-box" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
+               xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="5" width="20" height="13" rx="2" stroke="currentColor"
+                  stroke-width="1.7"/>
+            <path d="M2 10h20" stroke="currentColor" stroke-width="1.7"/>
+            <path d="M7 18v2M17 18v2" stroke="currentColor"
+                  stroke-width="1.7" stroke-linecap="round"/>
+            <circle cx="7.5" cy="14.5" r="1" fill="currentColor"/>
+            <circle cx="16.5" cy="14.5" r="1" fill="currentColor"/>
+            <path d="M2 13h1M21 13h1" stroke="currentColor"
+                  stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <p class="icon-tagline">Drive. Connect. Grow.</p>
+        <p class="icon-desc">
+          Create your account, add your vehicle and route,
+          then submit your documents.
+        </p>
+
+        <a href="login.html" class="btn btn-primary btn-full btn-lg"
+           style="margin-bottom:12px;">
+          Operator Sign Up
+        </a>
+
+        <a href="commuter-signup.html" class="btn btn-outline btn-full btn-lg">
+          Commuter Sign Up
+        </a>
+
+        <div class="auth-card__divider"></div>
+
+        <p class="auth-card__footer">
+          Already have an account? <a href="login.html">Log in</a>
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    Prototype with sample data for demonstration, not official fares or routes.
+  </footer>
+
+</body>
+</html>
