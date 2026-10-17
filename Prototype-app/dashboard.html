@@ -8,6 +8,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin="" />
   <style>
     /* ── Tab machinery (hidden radio inputs — must be direct siblings) ── */
     #tab1, #tab2, #tab3 { display: none; }
@@ -164,6 +167,63 @@
     .tab-badge--cheap  { background: #dcfce7; color: #166534; }
     .tab-badge--fast   { background: #dbeafe; color: #1e40af; }
     .tab-badge--best   { background: #f0fdf4; color: #166534; }
+
+    /* ── Route map ──────────────────────────────────────────────── */
+    .map-panel { margin-bottom: 28px; overflow: hidden; }
+    .map-panel__header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .map-panel__title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+    .map-panel__sub { font-size: 12px; color: var(--gray-400); }
+    #route-map {
+      height: 380px;
+      width: 100%;
+      background: var(--gray-100);
+    }
+    .map-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px 18px;
+      padding: 12px 20px;
+      border-top: 1px solid var(--gray-200);
+      font-size: 12px;
+      color: var(--gray-600);
+    }
+    .map-legend__item { display: flex; align-items: center; gap: 8px; }
+    .map-legend__dot {
+      width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+    }
+    .map-legend__dot--from { background: var(--teal); }
+    .map-legend__dot--to { background: var(--navy); }
+    .map-legend__dot--stop { background: var(--gray-400); }
+    .map-pin {
+      position: relative;
+      width: 28px; height: 28px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      border: 2px solid #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,.25);
+    }
+    .map-pin--from { background: var(--teal); }
+    .map-pin--to { background: var(--navy); }
+    .map-pin-inner {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #fff;
+      position: absolute; top: 7px; left: 7px;
+      transform: rotate(45deg);
+    }
+    .leaflet-popup-content { font-family: var(--font); margin: 10px 12px; }
+    .leaflet-popup-content strong { color: var(--gray-900); }
 
     /* ── Fare guide ─────────────────────────────────────────────── */
     .fare-guide-section { padding-top: 48px; margin-top: 40px; border-top: 1px solid var(--gray-200); }
@@ -326,6 +386,22 @@
         </div>
       </section>
 
+      <!-- ── Route map ── -->
+      <section class="db-section" aria-labelledby="map-heading">
+        <div class="map-panel card">
+          <div class="map-panel__header">
+            <h2 class="map-panel__title" id="map-heading">Route Map</h2>
+            <p class="map-panel__sub" id="map-sub">Cebu metro coverage · OpenStreetMap</p>
+          </div>
+          <div id="route-map" role="region" aria-label="Map of selected start and destination"></div>
+          <div class="map-legend">
+            <span class="map-legend__item"><span class="map-legend__dot map-legend__dot--from"></span> Starting point</span>
+            <span class="map-legend__item"><span class="map-legend__dot map-legend__dot--to"></span> Destination</span>
+            <span class="map-legend__item"><span class="map-legend__dot map-legend__dot--stop"></span> Other covered stops</span>
+          </div>
+        </div>
+      </section>
+
       <!-- ── B. Decision Engine results ── -->
       <section class="db-section results-area" id="results-area" aria-labelledby="results-heading">
         <h2 class="section-title" id="results-heading">Route Results</h2>
@@ -426,6 +502,9 @@
     .badge-balanced { background:#f0fdf4; color:#166534; }
   </style>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+          crossorigin=""></script>
   <script>
   /* ================================================================
      BIYAHERO DECISION ENGINE v2
@@ -448,6 +527,105 @@
     'talisay-ch':     'Talisay City Hall',
     'minglanilla-tc': 'Minglanilla Town Center'
   };
+
+  var COORDS = {
+    'colon':          [10.2974, 123.8998],
+    'ayala':          [10.3181, 123.9054],
+    'sm-cebu':        [10.3118, 123.9176],
+    'carbon':         [10.2928, 123.8975],
+    'mandaue-ch':     [10.3236, 123.9417],
+    'mactan-airport': [10.3072, 123.9794],
+    'talisay-ch':     [10.2447, 123.8494],
+    'minglanilla-tc': [10.2449, 123.7964]
+  };
+
+  var routeMap = null;
+  var mapLayers = { markers: [], line: null };
+
+  function pinIcon(kind) {
+    return L.divIcon({
+      className: '',
+      html: '<div class="map-pin map-pin--' + kind + '"><span class="map-pin-inner"></span></div>',
+      iconSize: [28, 28],
+      iconAnchor: [14, 28],
+      popupAnchor: [0, -28]
+    });
+  }
+
+  function clearMapLayers() {
+    if (!routeMap) return;
+    mapLayers.markers.forEach(function(m) { routeMap.removeLayer(m); });
+    mapLayers.markers = [];
+    if (mapLayers.line) {
+      routeMap.removeLayer(mapLayers.line);
+      mapLayers.line = null;
+    }
+  }
+
+  function initRouteMap() {
+    if (routeMap || typeof L === 'undefined') return;
+    routeMap = L.map('route-map', { scrollWheelZoom: true }).setView([10.29, 123.89], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(routeMap);
+    updateRouteMap();
+    setTimeout(function() { routeMap.invalidateSize(); }, 200);
+  }
+
+  function updateRouteMap() {
+    if (!routeMap) return;
+    clearMapLayers();
+    var fv = document.getElementById('from').value;
+    var tv = document.getElementById('to').value;
+    var bounds = [];
+
+    Object.keys(COORDS).forEach(function(id) {
+      if (id === fv || id === tv) return;
+      var m = L.circleMarker(COORDS[id], {
+        radius: 6,
+        color: '#fff',
+        weight: 2,
+        fillColor: '#9ca3af',
+        fillOpacity: 1
+      }).addTo(routeMap);
+      m.bindPopup('<strong>' + LOCATIONS[id] + '</strong>');
+      mapLayers.markers.push(m);
+    });
+
+    if (fv && COORDS[fv]) {
+      var fromM = L.marker(COORDS[fv], { icon: pinIcon('from'), zIndexOffset: 1000 }).addTo(routeMap);
+      fromM.bindPopup('<strong>Start</strong><br>' + LOCATIONS[fv]).openPopup();
+      mapLayers.markers.push(fromM);
+      bounds.push(COORDS[fv]);
+    }
+    if (tv && COORDS[tv] && tv !== fv) {
+      var toM = L.marker(COORDS[tv], { icon: pinIcon('to'), zIndexOffset: 1000 }).addTo(routeMap);
+      toM.bindPopup('<strong>Destination</strong><br>' + LOCATIONS[tv]);
+      mapLayers.markers.push(toM);
+      bounds.push(COORDS[tv]);
+    }
+    if (fv && tv && COORDS[fv] && COORDS[tv] && fv !== tv) {
+      mapLayers.line = L.polyline([COORDS[fv], COORDS[tv]], {
+        color: '#0E7C6F',
+        weight: 4,
+        opacity: 0.85
+      }).addTo(routeMap);
+    }
+
+    var sub = document.getElementById('map-sub');
+    if (sub) {
+      if (fv && tv && fv !== tv) sub.textContent = (LOCATIONS[fv] || fv) + ' → ' + (LOCATIONS[tv] || tv);
+      else sub.textContent = 'Cebu metro coverage · OpenStreetMap';
+    }
+
+    if (bounds.length >= 2) {
+      routeMap.fitBounds(bounds, { padding: [48, 48], maxZoom: 13 });
+    } else if (bounds.length === 1) {
+      routeMap.setView(bounds[0], 13);
+    }
+    routeMap.invalidateSize();
+  }
 
   var DB = {};
 
@@ -1166,6 +1344,7 @@
     var tv=document.getElementById('to').value;
     if(!fv||!tv){ alert('Please select both a starting point and a destination.'); return; }
     if(fv===tv){ alert('Starting point and destination cannot be the same.'); return; }
+    updateRouteMap();
     var fl=LOCATIONS[fv]||fv, tl=LOCATIONS[tv]||tv;
     var opts=DB[fv+'|'+tv];
     if(!opts){
@@ -1181,7 +1360,12 @@
     area.scrollIntoView({behavior:'smooth',block:'start'});
   }
 
-  window.addEventListener('DOMContentLoaded',function(){ findRoutes(); });
+  window.addEventListener('DOMContentLoaded',function(){
+    initRouteMap();
+    document.getElementById('from').addEventListener('change', updateRouteMap);
+    document.getElementById('to').addEventListener('change', updateRouteMap);
+    findRoutes();
+  });
   </script>
 
 </body>
